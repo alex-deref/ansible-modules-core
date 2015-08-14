@@ -173,6 +173,8 @@ notes:
    - Expect that dest=~/x will be ~<remote_user>/x even if using sudo.
    - To exclude files and directories from being synchronized, you may add 
      C(.rsync-filter) files to the source directory.
+   - Does not use SSH agent, authentication must be done using keys using a
+     key without a passphrase.
 
 
 author: "Timothy Appnel (@tima)"
@@ -334,7 +336,9 @@ def main():
     else:
         private_key = '-i '+ private_key 
 
-    ssh_opts = '-S none'
+    # PasswordAuthentication is disabled to prevent the background SSH process
+    # from blocking on input.
+    ssh_opts = '-S none -o PasswordAuthentication=no'
 
     if not verify_host:
       ssh_opts = '%s -o StrictHostKeyChecking=no' % ssh_opts
